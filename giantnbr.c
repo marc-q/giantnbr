@@ -226,10 +226,9 @@ void gnbr_add_array_int (unsigned int* nbr_array_a, unsigned int* nbr_array_b, u
 */
 void gnbr_subtract_array_int (unsigned int* nbr_array_a, unsigned int* nbr_array_b, unsigned int* nbr_array_out, int nbr_array_size)
 {
-	int i, pos, state;
-	double mtmp;
+	int i, pos, state, carry, mtmp;
 	
-	pos = mtmp = 0;
+	pos = mtmp = carry = 0;
 	
 	state = gnbr_bigger_array_int (nbr_array_a, nbr_array_b, nbr_array_size);
 	pos = gnbr_lastpos_array_int ((state == TRUE ? nbr_array_a : nbr_array_b), nbr_array_size);
@@ -238,15 +237,17 @@ void gnbr_subtract_array_int (unsigned int* nbr_array_a, unsigned int* nbr_array
 	
 	for (i = 0; i < nbr_array_size-1; i++)
 	{
-		mtmp = (nbr_array_a[i] + (-nbr_array_b[i]));
+		mtmp = (nbr_array_a[i] + (-nbr_array_b[i])) - carry;
 		
 		if (mtmp < 0)
 		{
-			nbr_array_out[i] = TONEGATIVE (mtmp) - (GNBR_INT_MAX);
+			nbr_array_out[i] = GNBR_INT_MAX + mtmp;
+			carry = 1;
 		}
 		else
 		{
 			nbr_array_out[i] = (state == TRUE ? (i < pos ? 0 - TONEGATIVE (mtmp) : 0 - TONEGATIVE (mtmp)) : (i < pos ? GNBR_INT_MAX + TONEGATIVE (mtmp) : TONEGATIVE (mtmp)));
+			carry = 0;
 		}
 	}
 }
