@@ -201,6 +201,10 @@ void gnbr_add_array_int (unsigned int* nbr_array_a, unsigned int* nbr_array_b, u
 		gnbr_subtract_array_int (nbr_array_a, nbr_array_b, nbr_array_out, nbr_array_size);
 		gnbr_setnegative_array_int (nbr_array_out, nbr_array_size, (gnbr_bigger_array_int (nbr_array_a, nbr_array_b, nbr_array_size) != TRUE ? FALSE : TRUE));
 	}
+	else if (gnbr_isnegative_array_int (nbr_array_b, nbr_array_size) == TRUE)
+	{
+		gnbr_subtract_array_int (nbr_array_a, nbr_array_b, nbr_array_out, nbr_array_size);
+	}
 	else
 	{
 		for (i = 0; i < nbr_array_size-1; i++)
