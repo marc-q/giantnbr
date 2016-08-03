@@ -95,6 +95,7 @@ static short gnbr_test_int_addition (void)
 	unsigned int *nbr_a, *nbr_b;
 	short passed;
 	
+	/* Add positive to positive. */
 	gnbr_init_array_int (&nbr_a, 10, 0);
 	gnbr_init_array_int (&nbr_b, 10, 0);
 	
@@ -107,6 +108,56 @@ static short gnbr_test_int_addition (void)
 	gnbr_add_array_int (nbr_a, nbr_b, nbr_a, 10);
 	
 	if (nbr_a[0] == 0 && nbr_a[1] == 0 && nbr_a[2] == 204243)
+	{
+		passed = TESTS_PASS;
+	}
+	else
+	{
+		passed = TESTS_FAIL;
+	}
+	
+	/* Add positive to negative. */
+	gnbr_fill_array_int (nbr_a, 10, 0);
+	gnbr_fill_array_int (nbr_b, 10, 0);
+	
+	nbr_a[0] = 999999999;
+	nbr_a[1] = 999999999;
+	nbr_a[2] = 204242;
+	
+	nbr_b[0] = 1;
+	
+	gnbr_setnegative_array_int (nbr_a, 10, TRUE);
+	gnbr_setnegative_array_int (nbr_b, 10, FALSE);
+	gnbr_add_array_int (nbr_a, nbr_b, nbr_a, 10);
+	
+	if (passed == TESTS_PASS &&
+	    gnbr_isnegative_array_int (nbr_a, 10) == TRUE &&
+	    nbr_a[0] == 999999998 && nbr_a[1] == 999999999 && nbr_a[2] == 204242)
+	{
+		passed = TESTS_PASS;
+	}
+	else
+	{
+		passed = TESTS_FAIL;
+	}
+	
+	/* Add negative to positive. */
+	gnbr_fill_array_int (nbr_a, 10, 0);
+	gnbr_fill_array_int (nbr_b, 10, 0);
+	
+	nbr_a[0] = 999999999;
+	nbr_a[1] = 999999999;
+	nbr_a[2] = 204242;
+	
+	nbr_b[0] = 1;
+	
+	gnbr_setnegative_array_int (nbr_a, 10, FALSE);
+	gnbr_setnegative_array_int (nbr_b, 10, TRUE);
+	gnbr_add_array_int (nbr_a, nbr_b, nbr_a, 10);
+	
+	if (passed == TESTS_PASS &&
+	    gnbr_isnegative_array_int (nbr_a, 10) == FALSE &&
+	    nbr_a[0] == 999999998 && nbr_a[1] == 999999999 && nbr_a[2] == 204242)
 	{
 		tst_print_success ("INT_Addition");
 		passed = TESTS_PASS;
