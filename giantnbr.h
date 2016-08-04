@@ -14,12 +14,12 @@ void gnbr_copy_array_int (unsigned int*, unsigned int*, int);
 
 /* Flags */
 void gnbr_setnegative_array_int (unsigned int*, int, short);
-unsigned short gnbr_isnegative_array_int (unsigned int*, int);
+bool gnbr_isnegative_array_int (unsigned int*, int);
 
 /* Utils */
 unsigned int gnbr_lastpos_array_int (unsigned int*, int);
-unsigned short gnbr_bigger_array_int (unsigned int*, unsigned int*, int);
-unsigned short gnbr_isnull_array_int (unsigned int*, int);
+bool gnbr_bigger_array_int (unsigned int*, unsigned int*, int);
+bool gnbr_isnull_array_int (unsigned int*, int);
 void gnbr_print_array_int (unsigned int*, int);
 
 /* Arithmetics */
@@ -31,4 +31,3 @@ void gnbr_factorial_array_int (unsigned int*, unsigned int*, int, int);
 void gnbr_square_array_int (unsigned int*, unsigned int*, int, int);
 
 #endif /* __GIANTNBR_H__ */
-
