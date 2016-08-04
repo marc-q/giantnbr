@@ -7,7 +7,7 @@
 #include "../lib/dutils.h"
 #include "../giantnbr.h"
 
-#define TESTS_AMOUNT 2
+#define TESTS_AMOUNT 3
 #define TESTS_FAIL 0
 #define TESTS_PASS 1
 
@@ -329,6 +329,130 @@ static short gnbr_test_int_subtraction (void)
 	return passed;
 }
 
+/*
+	Function: gnbr_test_int_multiplication (void);
+	Description: Tests the gnbr_multiply_array_int function from giantnbr.c.
+	InitVersion: 0.0.1
+*/
+static short gnbr_test_int_multiplication (void)
+{
+	unsigned int *nbr_a, *nbr_b, *nbr_c, *nbr_tmp;
+	short passed;
+	
+	/* Multiply two positive numbers. */
+	gnbr_init_array_int (&nbr_a, 10, 0);
+	gnbr_init_array_int (&nbr_b, 10, 0);
+	gnbr_init_array_int (&nbr_c, 10, 0);
+	gnbr_init_array_int (&nbr_tmp, 10, 0);
+	
+	nbr_a[0] = 500000008;
+	nbr_a[1] = 0;
+	nbr_a[2] = 2;
+	
+	nbr_b[0] = 3;
+	
+	gnbr_multiply_array_int (nbr_a, nbr_b, nbr_c, nbr_tmp, 10);
+	
+	if (gnbr_isnegative_array_int (nbr_c, 10) == false &&
+	    nbr_c[0] == 500000024 && nbr_c[1] == 1 && nbr_c[2] == 6)
+	{
+		passed = TESTS_PASS;
+	}
+	else
+	{
+		passed = TESTS_FAIL;
+	}
+	
+	/* Multiply a positive with an negative number. */
+	gnbr_fill_array_int (nbr_a, 10, 0);
+	gnbr_fill_array_int (nbr_b, 10, 0);
+	gnbr_fill_array_int (nbr_c, 10, 0);
+	
+	nbr_a[0] = 500000008;
+	nbr_a[1] = 0;
+	nbr_a[2] = 2;
+	
+	nbr_b[0] = 3;
+	
+	gnbr_setnegative_array_int (nbr_a, 10, FALSE);
+	gnbr_setnegative_array_int (nbr_b, 10, TRUE);
+	gnbr_setnegative_array_int (nbr_c, 10, FALSE);
+	gnbr_multiply_array_int (nbr_a, nbr_b, nbr_c, nbr_tmp, 10);
+	
+	if (passed == TESTS_PASS &&
+	    gnbr_isnegative_array_int (nbr_c, 10) == true &&
+	    nbr_c[0] == 500000024 && nbr_c[1] == 1 && nbr_c[2] == 6)
+	{
+		passed = TESTS_PASS;
+	}
+	else
+	{
+		passed = TESTS_FAIL;
+	}
+	
+	/* Multiply a negative with an positive number. */
+	gnbr_fill_array_int (nbr_a, 10, 0);
+	gnbr_fill_array_int (nbr_b, 10, 0);
+	gnbr_fill_array_int (nbr_c, 10, 0);
+	
+	nbr_a[0] = 500000008;
+	nbr_a[1] = 0;
+	nbr_a[2] = 2;
+	
+	nbr_b[0] = 3;
+	
+	gnbr_setnegative_array_int (nbr_a, 10, TRUE);
+	gnbr_setnegative_array_int (nbr_b, 10, FALSE);
+	gnbr_setnegative_array_int (nbr_c, 10, FALSE);
+	gnbr_multiply_array_int (nbr_a, nbr_b, nbr_c, nbr_tmp, 10);
+	
+	if (passed == TESTS_PASS &&
+	    gnbr_isnegative_array_int (nbr_c, 10) == true &&
+	    nbr_c[0] == 500000024 && nbr_c[1] == 1 && nbr_c[2] == 6)
+	{
+		passed = TESTS_PASS;
+	}
+	else
+	{
+		passed = TESTS_FAIL;
+	}
+	
+	/* Multiply a negative with an negative number. */
+	gnbr_fill_array_int (nbr_a, 10, 0);
+	gnbr_fill_array_int (nbr_b, 10, 0);
+	gnbr_fill_array_int (nbr_c, 10, 0);
+	
+	nbr_a[0] = 500000008;
+	nbr_a[1] = 0;
+	nbr_a[2] = 2;
+	
+	nbr_b[0] = 3;
+	
+	gnbr_setnegative_array_int (nbr_a, 10, TRUE);
+	gnbr_setnegative_array_int (nbr_b, 10, TRUE);
+	gnbr_setnegative_array_int (nbr_c, 10, FALSE);
+	gnbr_multiply_array_int (nbr_a, nbr_b, nbr_c, nbr_tmp, 10);
+	
+	if (passed == TESTS_PASS &&
+	    gnbr_isnegative_array_int (nbr_c, 10) == false &&
+	    nbr_c[0] == 500000024 && nbr_c[1] == 1 && nbr_c[2] == 6)
+	{
+		tst_print_success ("INT_Multiplication");
+		passed = TESTS_PASS;
+	}
+	else
+	{
+		tst_print_fail ("INT_Multiplication");
+		passed = TESTS_FAIL;
+	}
+	
+	gnbr_free_array_int (nbr_a);
+	gnbr_free_array_int (nbr_b);
+	gnbr_free_array_int (nbr_c);
+	gnbr_free_array_int (nbr_tmp);
+	return passed;
+}
+
 int main (int argc, char* argv[])
 {
 	int points;
@@ -339,6 +463,7 @@ int main (int argc, char* argv[])
 	
 	points += gnbr_test_int_addition ();
 	points += gnbr_test_int_subtraction ();
+	points += gnbr_test_int_multiplication ();
 	
 	tst_print_summary (points);
 	

@@ -111,6 +111,8 @@ unsigned int gnbr_lastpos_array_int (unsigned int* nbr_array, int nbr_array_size
 			return nbr_array_size;
 		}
 	}
+	
+	return 0;
 }
 
 /*
@@ -279,15 +281,25 @@ void gnbr_subtract_array_int (unsigned int* nbr_array_a, unsigned int* nbr_array
 */
 void gnbr_multiply_array_int (unsigned int* nbr_array_a, unsigned int* nbr_array_b, unsigned int* nbr_array_out, unsigned int* nbr_array_tmp, int nbr_array_size)
 {
+	bool state_a, state_b;
+	
+	state_a = gnbr_isnegative_array_int (nbr_array_a, nbr_array_size);
+	state_b = gnbr_isnegative_array_int (nbr_array_b, nbr_array_size);
+	
 	/* Inits a array with the value 1 */
 	gnbr_fill_array_int (nbr_array_tmp, nbr_array_size, 0);
 	nbr_array_tmp[0] = 1;
 	
-	while (gnbr_isnull_array_int (nbr_array_b, nbr_array_size) != true)
+	gnbr_setnegative_array_int (nbr_array_tmp, nbr_array_size, state_b);
+	gnbr_setnegative_array_int (nbr_array_out, nbr_array_size, state_a);
+	
+	while (gnbr_isnull_array_int (nbr_array_b, nbr_array_size) == false)
 	{
 		gnbr_add_array_int (nbr_array_out, nbr_array_a, nbr_array_out, nbr_array_size);
 		gnbr_subtract_array_int (nbr_array_b, nbr_array_tmp, nbr_array_b, nbr_array_size);
 	}
+	
+	gnbr_setnegative_array_int (nbr_array_out, nbr_array_size, state_a ^ state_b);
 }
 
 /*
