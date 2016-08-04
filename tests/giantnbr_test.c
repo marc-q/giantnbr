@@ -2,6 +2,7 @@
 /* Project: GiantNbr */
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include "../lib/dutils.h"
 #include "../giantnbr.h"
@@ -92,12 +93,13 @@ static void tst_print_summary (int points)
 */
 static short gnbr_test_int_addition (void)
 {
-	unsigned int *nbr_a, *nbr_b;
+	unsigned int *nbr_a, *nbr_b, *nbr_c;
 	short passed;
 	
 	/* Add positive to positive. */
 	gnbr_init_array_int (&nbr_a, 10, 0);
 	gnbr_init_array_int (&nbr_b, 10, 0);
+	gnbr_init_array_int (&nbr_c, 10, 0);
 	
 	nbr_a[0] = 999999999;
 	nbr_a[1] = 999999999;
@@ -105,9 +107,9 @@ static short gnbr_test_int_addition (void)
 	
 	nbr_b[0] = 1;
 	
-	gnbr_add_array_int (nbr_a, nbr_b, nbr_a, 10);
+	gnbr_add_array_int (nbr_a, nbr_b, nbr_c, 10);
 	
-	if (nbr_a[0] == 0 && nbr_a[1] == 0 && nbr_a[2] == 204243)
+	if (nbr_c[0] == 0 && nbr_c[1] == 0 && nbr_c[2] == 204243)
 	{
 		passed = TESTS_PASS;
 	}
@@ -119,6 +121,7 @@ static short gnbr_test_int_addition (void)
 	/* Add positive to negative. */
 	gnbr_fill_array_int (nbr_a, 10, 0);
 	gnbr_fill_array_int (nbr_b, 10, 0);
+	gnbr_fill_array_int (nbr_c, 10, 0);
 	
 	nbr_a[0] = 999999999;
 	nbr_a[1] = 999999999;
@@ -128,11 +131,12 @@ static short gnbr_test_int_addition (void)
 	
 	gnbr_setnegative_array_int (nbr_a, 10, TRUE);
 	gnbr_setnegative_array_int (nbr_b, 10, FALSE);
-	gnbr_add_array_int (nbr_a, nbr_b, nbr_a, 10);
+	gnbr_setnegative_array_int (nbr_c, 10, FALSE);
+	gnbr_add_array_int (nbr_a, nbr_b, nbr_c, 10);
 	
 	if (passed == TESTS_PASS &&
-	    gnbr_isnegative_array_int (nbr_a, 10) == TRUE &&
-	    nbr_a[0] == 999999998 && nbr_a[1] == 999999999 && nbr_a[2] == 204242)
+	    gnbr_isnegative_array_int (nbr_c, 10) == true &&
+	    nbr_c[0] == 999999998 && nbr_c[1] == 999999999 && nbr_c[2] == 204242)
 	{
 		passed = TESTS_PASS;
 	}
@@ -144,6 +148,7 @@ static short gnbr_test_int_addition (void)
 	/* Add negative to positive. */
 	gnbr_fill_array_int (nbr_a, 10, 0);
 	gnbr_fill_array_int (nbr_b, 10, 0);
+	gnbr_fill_array_int (nbr_c, 10, 0);
 	
 	nbr_a[0] = 999999999;
 	nbr_a[1] = 999999999;
@@ -153,11 +158,39 @@ static short gnbr_test_int_addition (void)
 	
 	gnbr_setnegative_array_int (nbr_a, 10, FALSE);
 	gnbr_setnegative_array_int (nbr_b, 10, TRUE);
-	gnbr_add_array_int (nbr_a, nbr_b, nbr_a, 10);
+	gnbr_setnegative_array_int (nbr_c, 10, FALSE);
+	gnbr_add_array_int (nbr_a, nbr_b, nbr_c, 10);
 	
 	if (passed == TESTS_PASS &&
-	    gnbr_isnegative_array_int (nbr_a, 10) == FALSE &&
-	    nbr_a[0] == 999999998 && nbr_a[1] == 999999999 && nbr_a[2] == 204242)
+	    gnbr_isnegative_array_int (nbr_c, 10) == false &&
+	    nbr_c[0] == 999999998 && nbr_c[1] == 999999999 && nbr_c[2] == 204242)
+	{
+		passed = TESTS_PASS;
+	}
+	else
+	{
+		passed = TESTS_FAIL;
+	}
+	
+	/* Add negative to negative. */
+	gnbr_fill_array_int (nbr_a, 10, 0);
+	gnbr_fill_array_int (nbr_b, 10, 0);
+	gnbr_fill_array_int (nbr_c, 10, 0);
+	
+	nbr_a[0] = 999999999;
+	nbr_a[1] = 999999999;
+	nbr_a[2] = 204242;
+	
+	nbr_b[0] = 1;
+	
+	gnbr_setnegative_array_int (nbr_a, 10, TRUE);
+	gnbr_setnegative_array_int (nbr_b, 10, TRUE);
+	gnbr_setnegative_array_int (nbr_c, 10, FALSE);
+	gnbr_add_array_int (nbr_a, nbr_b, nbr_c, 10);
+	
+	if (passed == TESTS_PASS &&
+	    gnbr_isnegative_array_int (nbr_c, 10) == true &&
+	    nbr_c[0] == 0 && nbr_c[1] == 0 && nbr_c[2] == 204243)
 	{
 		tst_print_success ("INT_Addition");
 		passed = TESTS_PASS;
@@ -170,6 +203,7 @@ static short gnbr_test_int_addition (void)
 	
 	gnbr_free_array_int (nbr_a);
 	gnbr_free_array_int (nbr_b);
+	gnbr_free_array_int (nbr_c);
 	return passed;
 }
 
@@ -183,6 +217,7 @@ static short gnbr_test_int_subtraction (void)
 	unsigned int *nbr_a, *nbr_b, *nbr_c;
 	short passed;
 	
+	/* Subtract a positive from an positive number. */
 	gnbr_init_array_int (&nbr_a, 10, 0);
 	gnbr_init_array_int (&nbr_b, 10, 0);
 	gnbr_init_array_int (&nbr_c, 10, 0);
@@ -195,7 +230,89 @@ static short gnbr_test_int_subtraction (void)
 	
 	gnbr_subtract_array_int (nbr_a, nbr_b, nbr_c, 10);
 	
-	if (nbr_c[0] == 999999998 && nbr_c[1] == 999999999 && nbr_c[2] == 1)
+	if (gnbr_isnegative_array_int (nbr_c, 10) == false &&
+	    nbr_c[0] == 999999998 && nbr_c[1] == 999999999 && nbr_c[2] == 1)
+	{
+		passed = TESTS_PASS;
+	}
+	else
+	{
+		passed = TESTS_FAIL;
+	}
+	
+	/* Subtract a positive from an negative number. */
+	gnbr_fill_array_int (nbr_a, 10, 0);
+	gnbr_fill_array_int (nbr_b, 10, 0);
+	gnbr_fill_array_int (nbr_c, 10, 0);
+	
+	nbr_a[0] = 1;
+	nbr_a[1] = 0;
+	nbr_a[2] = 2;
+	
+	nbr_b[0] = 3;
+	
+	gnbr_setnegative_array_int (nbr_a, 10, TRUE);
+	gnbr_setnegative_array_int (nbr_b, 10, FALSE);
+	gnbr_setnegative_array_int (nbr_c, 10, FALSE);
+	gnbr_subtract_array_int (nbr_a, nbr_b, nbr_c, 10);
+	
+	if (passed == TESTS_PASS &&
+	    gnbr_isnegative_array_int (nbr_c, 10) == true &&
+	    nbr_c[0] == 4 && nbr_c[1] == 0 && nbr_c[2] == 2)
+	{
+		passed = TESTS_PASS;
+	}
+	else
+	{
+		passed = TESTS_FAIL;
+	}
+	
+	/* Subtract a negative from an positive number. */
+	gnbr_fill_array_int (nbr_a, 10, 0);
+	gnbr_fill_array_int (nbr_b, 10, 0);
+	gnbr_fill_array_int (nbr_c, 10, 0);
+	
+	nbr_a[0] = 1;
+	nbr_a[1] = 0;
+	nbr_a[2] = 2;
+	
+	nbr_b[0] = 3;
+	
+	gnbr_setnegative_array_int (nbr_a, 10, FALSE);
+	gnbr_setnegative_array_int (nbr_b, 10, TRUE);
+	gnbr_setnegative_array_int (nbr_c, 10, FALSE);
+	gnbr_subtract_array_int (nbr_a, nbr_b, nbr_c, 10);
+	
+	if (passed == TESTS_PASS &&
+	    gnbr_isnegative_array_int (nbr_c, 10) == false &&
+	    nbr_c[0] == 4 && nbr_c[1] == 0 && nbr_c[2] == 2)
+	{
+		passed = TESTS_PASS;
+	}
+	else
+	{
+		passed = TESTS_FAIL;
+	}
+	
+	/* Subtract a negative from an negative number. */
+	gnbr_fill_array_int (nbr_a, 10, 0);
+	gnbr_fill_array_int (nbr_b, 10, 0);
+	gnbr_fill_array_int (nbr_c, 10, 0);
+	
+	nbr_a[0] = 1;
+	nbr_a[1] = 0;
+	nbr_a[2] = 2;
+	
+	nbr_b[0] = 3;
+	
+	gnbr_setnegative_array_int (nbr_a, 10, TRUE);
+	gnbr_setnegative_array_int (nbr_b, 10, TRUE);
+	gnbr_setnegative_array_int (nbr_c, 10, FALSE);
+	gnbr_subtract_array_int (nbr_a, nbr_b, nbr_c, 10);
+	
+	if (passed == TESTS_PASS &&
+	    gnbr_isnegative_array_int (nbr_c, 10) == true &&
+	    nbr_c[0] == 999999998 && nbr_c[1] == 999999999 && nbr_c[2] == 1)
 	{
 		tst_print_success ("INT_Subtraction");
 		passed = TESTS_PASS;

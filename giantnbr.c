@@ -2,6 +2,7 @@
 /* Project: GiantNbr */
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <math.h>
 #include <limits.h>
 #include "lib/dutils.h"
@@ -87,9 +88,9 @@ void gnbr_setnegative_array_int (unsigned int* nbr_array, int nbr_array_size, sh
 	Description: Returns the negative flag of an array of integers.
 	InitVersion: 0.0.1
 */
-unsigned short gnbr_isnegative_array_int (unsigned int* nbr_array, int nbr_array_size)
+bool gnbr_isnegative_array_int (unsigned int* nbr_array, int nbr_array_size)
 {
-	return BITGET (nbr_array[nbr_array_size-1], GNBR_INT_FLAG_NEGATIVE);
+	return (BITGET (nbr_array[nbr_array_size-1], GNBR_INT_FLAG_NEGATIVE) == 1 ? true : false);
 }
 
 /* |--------------------------------------------|
@@ -117,15 +118,28 @@ unsigned int gnbr_lastpos_array_int (unsigned int* nbr_array, int nbr_array_size
 	Description: Returns if nbr_array_a is bigger than nbr_array_b.
 	InitVersion: 0.0.1
 */
-unsigned short gnbr_bigger_array_int (unsigned int* nbr_array_a, unsigned int* nbr_array_b, int nbr_array_size)
+bool gnbr_bigger_array_int (unsigned int* nbr_array_a, unsigned int* nbr_array_b, int nbr_array_size)
 {
+	if (gnbr_isnegative_array_int (nbr_array_a, nbr_array_size) == true &&
+	    gnbr_isnegative_array_int (nbr_array_b, nbr_array_size) == false)
+	{
+		return false;
+	}
+	else if (gnbr_isnegative_array_int (nbr_array_a, nbr_array_size) == false &&
+		 gnbr_isnegative_array_int (nbr_array_b, nbr_array_size) == true)
+	{
+		return true;
+	}
+	
 	for (nbr_array_size -= 2; nbr_array_size >= 0; nbr_array_size--)
 	{
 		if (nbr_array_a[nbr_array_size] != 0 || nbr_array_b[nbr_array_size] != 0)
 		{
-			return (nbr_array_a[nbr_array_size] > nbr_array_b[nbr_array_size] ? TRUE : FALSE);
+			return (nbr_array_a[nbr_array_size] > nbr_array_b[nbr_array_size] ? true : false);
 		}
 	}
+	
+	return false;
 }
 
 /*
@@ -133,17 +147,17 @@ unsigned short gnbr_bigger_array_int (unsigned int* nbr_array_a, unsigned int* n
 	Description: Returns if nbr_array equals 0.
 	InitVersion: 0.0.1
 */
-unsigned short gnbr_isnull_array_int (unsigned int* nbr_array, int nbr_array_size)
+bool gnbr_isnull_array_int (unsigned int* nbr_array, int nbr_array_size)
 {
 	nbr_array_size = gnbr_lastpos_array_int (nbr_array, nbr_array_size);
 	
 	if (nbr_array_size == 0 && nbr_array[0] == 0)
 	{
-		return TRUE;
+		return true;
 	}
 	else
 	{
-		return FALSE;
+		return false;
 	}
 }
 
@@ -159,7 +173,7 @@ void gnbr_print_array_int (unsigned int* nbr_array, int nbr_array_size)
 	pos = gnbr_lastpos_array_int (nbr_array, nbr_array_size);
 	
 	/* Negative OR Positive */
-	if (gnbr_isnegative_array_int (nbr_array, nbr_array_size) == TRUE)
+	if (gnbr_isnegative_array_int (nbr_array, nbr_array_size) == true)
 	{
 		printf ("-");
 	}
@@ -188,37 +202,38 @@ void gnbr_print_array_int (unsigned int* nbr_array, int nbr_array_size)
 	Function: gnbr_add_array_int (unsigned int* nbr_array_a, unsigned int* nbr_array_b, unsigned int* nbr_array_out, int nbr_array_size);
 	Description: Performs the addition with two arrays of integers.
 	InitVersion: 0.0.1
-*/	
+*/
 void gnbr_add_array_int (unsigned int* nbr_array_a, unsigned int* nbr_array_b, unsigned int* nbr_array_out, int nbr_array_size)
 {
-	int i, carry;
+	int i, mtmp;
+	short carry;
+	bool state_a, state_b;
 	
 	carry = 0;
 	
-	/* If adding a negative number, perform a substraction */
-	if (gnbr_isnegative_array_int (nbr_array_a, nbr_array_size) == TRUE)
+	state_a = gnbr_isnegative_array_int (nbr_array_a, nbr_array_size);
+	state_b = gnbr_isnegative_array_int (nbr_array_b, nbr_array_size);
+	
+	gnbr_setnegative_array_int (nbr_array_out, nbr_array_size, state_a);
+	
+	for (i = 0; i < nbr_array_size-1; i++)
 	{
-		gnbr_subtract_array_int (nbr_array_a, nbr_array_b, nbr_array_out, nbr_array_size);
-		gnbr_setnegative_array_int (nbr_array_out, nbr_array_size, (gnbr_bigger_array_int (nbr_array_a, nbr_array_b, nbr_array_size) != TRUE ? FALSE : TRUE));
-	}
-	else if (gnbr_isnegative_array_int (nbr_array_b, nbr_array_size) == TRUE)
-	{
-		gnbr_subtract_array_int (nbr_array_a, nbr_array_b, nbr_array_out, nbr_array_size);
-	}
-	else
-	{
-		for (i = 0; i < nbr_array_size-1; i++)
+		mtmp = nbr_array_a[i] + (state_a ^ state_b ? (-nbr_array_b[i]) : nbr_array_b[i]) + carry;
+		
+		if (mtmp < 0)
 		{
-			if ((nbr_array_a[i] + nbr_array_b[i] + carry) >= GNBR_INT_MAX)
-			{
-				nbr_array_out[i] = (nbr_array_a[i] + nbr_array_b[i] + carry) - (GNBR_INT_MAX);
-				carry = 1;	
-			}
-			else
-			{
-				nbr_array_out[i] = nbr_array_a[i] + nbr_array_b[i] + carry;
-				carry = 0;
-			}
+			nbr_array_out[i] = (unsigned int) (GNBR_INT_MAX + mtmp);
+			carry = -1;
+		}
+		else if (mtmp >= GNBR_INT_MAX)
+		{
+			nbr_array_out[i] = (unsigned int) (mtmp - GNBR_INT_MAX);
+			carry = 1;
+		}
+		else
+		{
+			nbr_array_out[i] = (unsigned int) mtmp;
+			carry = 0;
 		}
 	}
 }
@@ -230,29 +245,30 @@ void gnbr_add_array_int (unsigned int* nbr_array_a, unsigned int* nbr_array_b, u
 */
 void gnbr_subtract_array_int (unsigned int* nbr_array_a, unsigned int* nbr_array_b, unsigned int* nbr_array_out, int nbr_array_size)
 {
-	int i, pos, state, carry, mtmp;
+	bool state_a, state_b;
 	
-	pos = mtmp = carry = 0;
+	state_a = gnbr_isnegative_array_int (nbr_array_a, nbr_array_size);
+	state_b = gnbr_isnegative_array_int (nbr_array_b, nbr_array_size);
 	
-	state = gnbr_bigger_array_int (nbr_array_a, nbr_array_b, nbr_array_size);
-	pos = gnbr_lastpos_array_int ((state == TRUE ? nbr_array_a : nbr_array_b), nbr_array_size);
-	
-	gnbr_setnegative_array_int (nbr_array_out, nbr_array_size, (state == TRUE ? FALSE : TRUE));
-	
-	for (i = 0; i < nbr_array_size-1; i++)
+	if (!state_a && !state_b)
 	{
-		mtmp = (nbr_array_a[i] + (-nbr_array_b[i])) - carry;
+		gnbr_setnegative_array_int (nbr_array_b, nbr_array_size, TRUE);
+		gnbr_add_array_int (nbr_array_a, nbr_array_b, nbr_array_out, nbr_array_size);
+		gnbr_setnegative_array_int (nbr_array_b, nbr_array_size, FALSE);
+	}
+	else if (state_b)
+	{
+		gnbr_setnegative_array_int (nbr_array_b, nbr_array_size, FALSE);
+		gnbr_add_array_int (nbr_array_a, nbr_array_b, nbr_array_out, nbr_array_size);
+		gnbr_setnegative_array_int (nbr_array_b, nbr_array_size, TRUE);
+	}
+	else if (state_a)
+	{
+		gnbr_setnegative_array_int (nbr_array_a, nbr_array_size, FALSE);
+		gnbr_add_array_int (nbr_array_a, nbr_array_b, nbr_array_out, nbr_array_size);
 		
-		if (mtmp < 0)
-		{
-			nbr_array_out[i] = GNBR_INT_MAX + mtmp;
-			carry = 1;
-		}
-		else
-		{
-			nbr_array_out[i] = (state == TRUE ? (i < pos ? 0 - TONEGATIVE (mtmp) : 0 - TONEGATIVE (mtmp)) : (i < pos ? GNBR_INT_MAX + TONEGATIVE (mtmp) : TONEGATIVE (mtmp)));
-			carry = 0;
-		}
+		gnbr_setnegative_array_int (nbr_array_a, nbr_array_size, TRUE);
+		gnbr_setnegative_array_int (nbr_array_out, nbr_array_size, TRUE);
 	}
 }
 
@@ -267,7 +283,7 @@ void gnbr_multiply_array_int (unsigned int* nbr_array_a, unsigned int* nbr_array
 	gnbr_fill_array_int (nbr_array_tmp, nbr_array_size, 0);
 	nbr_array_tmp[0] = 1;
 	
-	while (gnbr_isnull_array_int (nbr_array_b, nbr_array_size) != TRUE)
+	while (gnbr_isnull_array_int (nbr_array_b, nbr_array_size) != true)
 	{
 		gnbr_add_array_int (nbr_array_out, nbr_array_a, nbr_array_out, nbr_array_size);
 		gnbr_subtract_array_int (nbr_array_b, nbr_array_tmp, nbr_array_b, nbr_array_size);
