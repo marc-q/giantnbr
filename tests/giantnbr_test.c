@@ -1,4 +1,4 @@
-/* Copyright 2016 Marc Volker Dickmann */
+/* Copyright 2016 - 2017 Marc Volker Dickmann */
 /* Project: GiantNbr */
 #include <stdio.h>
 #include <stdlib.h>
@@ -459,7 +459,7 @@ int main (int argc, char* argv[])
 	
 	points = 0;
 	
-	printf ("GiantNbr v. 0.0.1 A (c) 2016 Marc Volker Dickmann\n\n");
+	printf ("GiantNbr v. 0.0.1 A (c) 2016 - 2017 Marc Volker Dickmann\n\n");
 	
 	points += gnbr_test_int_addition ();
 	points += gnbr_test_int_subtraction ();
